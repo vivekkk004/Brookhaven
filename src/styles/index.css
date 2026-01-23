@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-2.5 rounded-md bg-kindle-500 text-white font-medium shadow-sm hover:bg-kindle-600 active:bg-kindle-700 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 rounded-md bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:border-kindle-500 hover:text-kindle-600 hover:bg-kindle-50 transition-all duration-150;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-book hover:shadow-book-hover transition-shadow duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-md border border-gray-300 focus:border-kindle-500 focus:ring-2 focus:ring-kindle-100 focus:outline-none transition-colors duration-150;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .badge-primary {
+    @apply bg-kindle-100 text-kindle-800;
+  }
+
+  .page-container {
+    @apply min-h-screen bg-gray-50;
+  }
+
+  .content-wrapper {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6;
+  }
+
+  /* Kindle-style navbar */
+  .navbar-dark {
+    @apply bg-dark-900 text-white shadow-sm;
+  }
+}
+
+/* Global Optimizations */
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: #f7a01b;
+  /* kindle-500 */
+  color: white;
+}
+
+/* Custom Scrollbar - Refined */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+  border: 2px solid #f9fafb;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Skeleton Loader - Cleaner style */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.skeleton-text {
+  @apply skeleton h-4 w-full mb-2;
+}
+
+.skeleton-title {
+  @apply skeleton h-6 w-3/4 mb-4;
+}
+
+.skeleton-image {
+  @apply skeleton h-64 w-full mb-4;
+}
+
+/* Kindle-style focus states */
+*:focus-visible {
+  @apply outline-none ring-2 ring-kindle-500 ring-offset-2;
+}
+
+/* Hide scrollbar for horizontal scroll sections */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
