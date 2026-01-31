@@ -1,17 +1,16 @@
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/ui/Navbar';
 import Footer from '../components/ui/Footer';
-import Toast from '../components/ui/Toast';
 
 const MainLayout = () => {
     return (
-        <div className="min-h-screen flex flex-col bg-vintage-offWhite">
+        <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-1">
+            <main className="flex-grow bg-gray-50">
                 <Outlet />
             </main>
             <Footer />
-            <Toast />
         </div>
     );
 };

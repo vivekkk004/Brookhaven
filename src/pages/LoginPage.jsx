@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../app/features/slice/authSlice';
+import { loginUserThunk } from '../app/features/slice/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -22,14 +22,21 @@ const LoginPage = () => {
         e.preventDefault();
 
         try {
-            const result = await dispatch(login(formData)).unwrap();
+            const result = await dispatch(loginUserThunk({
+                email: formData.email,
+                password: formData.password
+            })).unwrap();
+
             dispatch(showToast({ message: 'Login successful!', type: 'success' }));
 
             // Redirect based on role
-            if (result.user.role === 'customer') {
+            const role = result?.role || result?.user?.role;
+            if (role === 'customer') {
                 navigate('/customer/dashboard');
-            } else if (result.user.role === 'user') {
+            } else if (role === 'user' || role === 'seller') {
                 navigate('/user/dashboard');
+            } else {
+                navigate('/customer/dashboard'); // defaulting
             }
         } catch (err) {
             dispatch(showToast({ message: err || 'Login failed', type: 'error' }));
@@ -38,10 +45,10 @@ const LoginPage = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 1 }} // Ensure start is visible
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-md"
+            className="w-full max-w-md relative z-10 bg-white rounded-2xl"
         >
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
                 {/* Header */}

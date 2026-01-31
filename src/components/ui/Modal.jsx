@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 
 const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
     const sizes = {
@@ -8,7 +9,9 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
         xl: 'max-w-6xl',
     };
 
-    return (
+    if (typeof document === 'undefined') return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <>
@@ -18,17 +21,17 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998]"
                     />
 
                     {/* Modal */}
-                    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-y-auto">
+                    <div className="fixed inset-0 flex items-center justify-center p-4 z-[9999] overflow-y-auto pointer-events-none">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={{ duration: 0.2 }}
-                            className={`w-full ${sizes[size]} bg-white rounded-2xl shadow-2xl`}
+                            className={`w-full ${sizes[size]} bg-white rounded-2xl shadow-2xl pointer-events-auto`}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Header */}
@@ -47,14 +50,15 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
                             )}
 
                             {/* Content */}
-                            <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+                            <div className="px-6 py-4 max-h-[85vh] overflow-y-auto">
                                 {children}
                             </div>
                         </motion.div>
                     </div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 

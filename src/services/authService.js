@@ -1,70 +1,121 @@
-// Mock delay to simulate API call
+// Mock auth service used when no backend is checking
+import Cookies from "js-cookie";
+
 const delay = (ms = 800) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Mock auth service
-export const login = async (credentials) => {
-    await delay();
+export const isTokenExpired = () => {
+    const token = Cookies.get("accessToken");
+    if (!token) return true;
+    return false;
+};
 
-    const { email, password } = credentials;
+export const refreshAccessToken = async () => {
+    await delay(500);
+    return Cookies.get("accessToken");
+};
+
+export const loginUser = async (loginId, password) => {
+    await delay(1000); // Simulate network request
 
     // Mock validation
-    if (!email || !password) {
+    // Allow any login for demo purposes
+    if (!loginId || !password) {
         throw new Error('Email and password are required');
     }
 
-    // Mock user data based on email
-    const isSeller = email.includes('seller');
+    // Mock successful login
+    const isSeller = loginId.toLowerCase().includes('seller');
+    const role = isSeller ? 'user' : 'customer';
+    const userId = 'mock-' + Math.random().toString(36).substr(2, 9);
 
-    const user = {
-        id: Math.random().toString(36).substr(2, 9),
-        email,
-        name: email.split('@')[0],
-        role: isSeller ? 'user' : 'customer',
-        avatar: `https://ui-avatars.com/api/?name=${email.split('@')[0]}&background=random`,
+    const mockUser = {
+        _id: userId,
+        email: loginId,
+        roleName: role,
+        name: loginId.split('@')[0],
     };
 
-    const token = 'mock_jwt_token_' + btoa(JSON.stringify(user));
+    // Fake token structure to satisfy "dynamic" look
+    const fakeTokenPart = btoa(JSON.stringify(mockUser));
+    const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${fakeTokenPart}.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`;
+    const refreshToken = `mock_refresh_token_${Date.now()}`;
 
-    return { user, token };
+    // Set Cookies as expected by the new implementation
+    Cookies.set("accessToken", accessToken, { secure: false, sameSite: "Strict" });
+    Cookies.set("refreshToken", refreshToken, { secure: false, sameSite: "Strict" });
+    Cookies.set("role", role);
+    Cookies.set("userid", userId);
+
+    return {
+        accessToken,
+        refreshToken,
+        role,
+        email: loginId,
+        userid: userId,
+        user: mockUser
+    };
 };
 
-export const register = async (userData) => {
-    await delay();
+export const registerUser = async (userData) => {
+    await delay(1000);
 
-    const { email, password, name, role } = userData;
+    const { email, role, name } = userData;
+    const userId = 'mock-' + Math.random().toString(36).substr(2, 9);
 
-    // Mock validation
-    if (!email || !password || !name) {
-        throw new Error('All fields are required');
-    }
-
-    const user = {
-        id: Math.random().toString(36).substr(2, 9),
+    const mockUser = {
+        _id: userId,
         email,
-        name,
-        role: role || 'customer',
-        avatar: `https://ui-avatars.com/api/?name=${name}&background=random`,
+        roleName: role || 'customer',
+        name: name || email.split('@')[0],
     };
 
-    const token = 'mock_jwt_token_' + btoa(JSON.stringify(user));
+    const fakeTokenPart = btoa(JSON.stringify(mockUser));
+    const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${fakeTokenPart}.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`;
+    const refreshToken = `mock_refresh_token_${Date.now()}`;
 
-    return { user, token };
+    Cookies.set("accessToken", accessToken, { secure: false, sameSite: "Strict" });
+    Cookies.set("refreshToken", refreshToken, { secure: false, sameSite: "Strict" });
+    Cookies.set("role", mockUser.roleName);
+    Cookies.set("userid", userId);
+
+    return {
+        accessToken,
+        refreshToken,
+        role: mockUser.roleName,
+        email,
+        userid: userId,
+        user: mockUser
+    };
 };
 
-export const logout = async () => {
-    await delay(300);
-    return { success: true };
-};
-
-export const checkAuth = async () => {
+export const logoutUser = async () => {
     await delay(500);
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("role");
+    Cookies.remove("userid");
+    // window.location.href = "/"; // Let the component handle navigation if preferred, or uncomment
+};
 
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
+export const fetchCurrentUser = async (userId) => {
+    await delay(500);
+    // Mock return current user details
+    return {
+        data: {
+            _id: userId,
+            name: "Mock User",
+            email: "mock@example.com",
+            role: Cookies.get("role") || "customer"
+        }
+    };
+};
 
-    if (!token || !user) {
-        throw new Error('Not authenticated');
-    }
-
-    return { user: JSON.parse(user) };
+// Legacy exports if still used
+export const login = loginUser;
+export const register = registerUser;
+export const logout = logoutUser;
+export const checkAuth = async () => {
+    const token = Cookies.get("accessToken");
+    if (!token) throw new Error("Not authenticated");
+    return { user: { role: Cookies.get("role") } };
 };

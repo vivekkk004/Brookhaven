@@ -4,12 +4,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import CustomerLayout from '../layouts/CustomerLayout';
 import UserLayout from '../layouts/UserLayout';
+import AuthLayout from '../layouts/AuthLayout';
 
 // Route Protection
-import PublicRoute from './PublicRoute';
-import RoleBaseRoute from './RoleBaseRoute';
+import RoleBaseRoute from './RoleRoute';
+import PublicRoute from './PublicLayout';
 
-// Public Pages
+// Pages
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
@@ -26,7 +27,7 @@ import WishlistPage from '../pages/customer/WishlistPage';
 import ProfilePage from '../pages/customer/ProfilePage';
 import ChatPage from '../pages/customer/ChatPage';
 
-// User (Seller) Pages
+// Seller Pages
 import UserDashboardPage from '../pages/user/UserDashboardPage';
 import AddBookPage from '../pages/user/AddBookPage';
 import MyListingsPage from '../pages/user/MyListingsPage';
@@ -35,20 +36,27 @@ import EarningsPage from '../pages/user/EarningsPage';
 import SellerChatPage from '../pages/user/SellerChatPage';
 import SellerProfilePage from '../pages/user/SellerProfilePage';
 
-import AuthLayout from '../layouts/AuthLayout';
-
 const AppRoutes = () => {
     return (
         <Routes>
-            {/* Standalone Auth Pages */}
-            <Route element={<PublicRoute restricted={true} />}>
-                <Route element={<AuthLayout />}>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                </Route>
+            {/* Explicit Auth Routes -  Top Level Priority */}
+            <Route path="/login" element={
+                <PublicRoute restricted={true}>
+                    <AuthLayout />
+                </PublicRoute>
+            }>
+                <Route index element={<LoginPage />} />
             </Route>
 
-            {/* Public Routes with MainLayout */}
+            <Route path="/register" element={
+                <PublicRoute restricted={true}>
+                    <AuthLayout />
+                </PublicRoute>
+            }>
+                <Route index element={<RegisterPage />} />
+            </Route>
+
+            {/* Public Routes */}
             <Route element={<MainLayout />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/books" element={<BooksPage />} />
@@ -58,14 +66,11 @@ const AppRoutes = () => {
             </Route>
 
             {/* Customer Routes */}
-            <Route
-                path="/customer"
-                element={
-                    <RoleBaseRoute allowedRoles={['customer']}>
-                        <CustomerLayout />
-                    </RoleBaseRoute>
-                }
-            >
+            <Route path="/customer" element={
+                <RoleBaseRoute allowedRoles={['customer']}>
+                    <CustomerLayout />
+                </RoleBaseRoute>
+            }>
                 <Route path="dashboard" element={<CustomerDashboardPage />} />
                 <Route path="orders" element={<OrdersPage />} />
                 <Route path="orders/:id" element={<OrderDetailsPage />} />
@@ -76,14 +81,11 @@ const AppRoutes = () => {
             </Route>
 
             {/* Seller Routes */}
-            <Route
-                path="/user"
-                element={
-                    <RoleBaseRoute allowedRoles={['user']}>
-                        <UserLayout />
-                    </RoleBaseRoute>
-                }
-            >
+            <Route path="/user" element={
+                <RoleBaseRoute allowedRoles={['user']}>
+                    <UserLayout />
+                </RoleBaseRoute>
+            }>
                 <Route path="dashboard" element={<UserDashboardPage />} />
                 <Route path="add-book" element={<AddBookPage />} />
                 <Route path="listings" element={<MyListingsPage />} />
@@ -94,7 +96,7 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="/user/dashboard" replace />} />
             </Route>
 
-            {/* Catch all */}
+            {/* Catch All */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );

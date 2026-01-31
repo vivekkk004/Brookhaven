@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../app/features/slice/authSlice';
+import { logoutUserThunk } from '../../app/features/slice/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
 import AuthModal from './AuthModal';
@@ -31,8 +31,8 @@ const Navbar = () => {
         setIsMobileMenuOpen(false);
     };
 
-    const handleLogout = () => {
-        dispatch(logout());
+    const handleLogout = async () => {
+        await dispatch(logoutUserThunk()).unwrap();
         navigate('/');
         setIsMobileMenuOpen(false);
         setIsUserMenuOpen(false);

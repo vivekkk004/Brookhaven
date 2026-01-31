@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../app/features/slice/authSlice';
+import { registerUserThunk } from '../app/features/slice/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserIcon, EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon, BookOpenIcon } from '@heroicons/react/24/outline';
@@ -44,7 +44,7 @@ const RegisterPage = () => {
         if (!validate()) return;
 
         try {
-            const result = await dispatch(register(formData)).unwrap();
+            const result = await dispatch(registerUserThunk(formData)).unwrap();
             dispatch(showToast({ message: 'Registration successful!', type: 'success' }));
 
             // Redirect based on role
